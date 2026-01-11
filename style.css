@@ -1,0 +1,352 @@
+/* iPhone SE 网络时钟样式 - 320×568px 专门优化 */
+
+/* CSS 变量定义 */
+:root {
+  --primary-bg: #000000;
+  --text-color: #ffffff;
+  --text-secondary: #cccccc;
+  --accent-color: #007aff;
+  --shadow-color: rgba(255, 255, 255, 0.1);
+
+  /* iPhone SE 专用尺寸 - 320px 宽度优化 */
+  --time-size: 20vw;          /* 约64px在320px宽度下 */
+  --date-size: 6vw;           /* 约19px在320px宽度下 */
+  --setting-btn-size: 44px;   /* iOS推荐触摸目标最小尺寸 */
+  --setting-panel-height: 60vh;
+
+  /* 间距和边距 */
+  --safe-padding: 20px;
+  --border-radius: 12px;
+  --transition-speed: 0.3s;
+}
+
+/* 基础重置和全局样式 */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--primary-bg);
+  color: var(--text-color);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+  height: 100vh;
+  overflow: hidden; /* 防止滚动 */
+  user-select: none; /* 防止文字选择 */
+  -webkit-user-select: none;
+  -webkit-touch-callout: none; /* 防止长按菜单 */
+  -webkit-tap-highlight-color: transparent; /* 移除点击高亮 */
+}
+
+/* 主时钟容器 */
+.clock-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+
+  /* iOS 安全区域支持 */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+           env(safe-area-inset-bottom) env(safe-area-inset-left);
+
+  /* 性能优化 */
+  contain: layout style paint;
+}
+
+/* 时间显示 */
+.time-display {
+  font-size: var(--time-size);
+  font-weight: 200;
+  font-variant-numeric: tabular-nums; /* 数字等宽 */
+  line-height: 0.8;
+  margin-bottom: 2vh;
+  letter-spacing: -0.02em; /* 紧密间距 */
+
+  /* 硬件加速和性能优化 */
+  transform: translateZ(0);
+  will-change: contents;
+
+  /* 文字阴影增强可读性 */
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+/* 日期显示 */
+.date-display {
+  font-size: var(--date-size);
+  opacity: 0.7;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  transition: opacity var(--transition-speed) ease;
+
+  /* 当隐藏时的动画 */
+  transform: translateZ(0);
+}
+
+.date-display.hidden {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+/* 设置按钮 */
+.settings-btn {
+  position: fixed;
+  top: calc(var(--safe-padding) + env(safe-area-inset-top));
+  right: calc(var(--safe-padding) + env(safe-area-inset-right));
+
+  width: var(--setting-btn-size);
+  height: var(--setting-btn-size);
+
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+
+  font-size: 18px;
+  color: var(--text-color);
+
+  cursor: pointer;
+  z-index: 100;
+
+  /* 触摸优化 */
+  touch-action: manipulation;
+
+  /* 动画过渡 */
+  transition: all var(--transition-speed) ease;
+
+  /* 模糊背景效果 */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.settings-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+.settings-btn:active {
+  transform: scale(0.95);
+  opacity: 0.7;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* 设置面板背景遮罩 */
+.settings-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 200;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-speed) ease;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.settings-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* 设置面板 */
+.settings-panel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  height: var(--setting-panel-height);
+  max-height: 400px;
+
+  background: rgba(28, 28, 30, 0.95);
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+
+  z-index: 300;
+
+  /* 初始状态：隐藏在底部 */
+  transform: translateY(100%);
+  transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* 模糊背景效果 */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  /* 安全区域适配 */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.settings-panel.active {
+  transform: translateY(0);
+}
+
+/* 设置面板内容 */
+.settings-content {
+  padding: 30px var(--safe-padding) var(--safe-padding);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-content h3 {
+  margin: 0 0 30px 0;
+  font-size: 22px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--text-color);
+}
+
+/* 设置项 */
+.setting-item {
+  margin-bottom: 20px;
+}
+
+.setting-item label {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color var(--transition-speed) ease;
+  font-size: 16px;
+
+  /* 触摸目标优化 */
+  min-height: 44px;
+}
+
+.setting-item label:active {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* 自定义复选框 */
+.setting-item input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.checkbox-custom {
+  width: 24px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  margin-right: 12px;
+  position: relative;
+  transition: all var(--transition-speed) ease;
+  flex-shrink: 0;
+}
+
+.setting-item input[type="checkbox"]:checked + .checkbox-custom {
+  background: var(--accent-color);
+}
+
+.checkbox-custom::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 8px;
+  height: 12px;
+  border: 2px solid white;
+  border-top: none;
+  border-left: none;
+  transform-origin: center;
+  transition: transform 0.2s ease;
+}
+
+.setting-item input[type="checkbox"]:checked + .checkbox-custom::after {
+  transform: translate(-50%, -60%) rotate(45deg) scale(1);
+}
+
+/* 关闭按钮 */
+.close-btn {
+  margin-top: auto;
+  padding: 15px 30px;
+  background: var(--accent-color);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+
+  /* 触摸优化 */
+  min-height: 44px;
+  touch-action: manipulation;
+}
+
+.close-btn:active {
+  transform: scale(0.98);
+  opacity: 0.8;
+}
+
+/* 响应式适配 - 超小屏幕进一步优化 */
+@media (max-width: 320px) {
+  :root {
+    --time-size: 18vw;
+    --date-size: 5.5vw;
+    --safe-padding: 15px;
+  }
+
+  .settings-content {
+    padding: 25px var(--safe-padding) var(--safe-padding);
+  }
+}
+
+/* 横屏模式适配 */
+@media (orientation: landscape) and (max-height: 568px) {
+  :root {
+    --time-size: 15vh;
+    --date-size: 4vh;
+    --setting-panel-height: 80vh;
+  }
+
+  .clock-container {
+    justify-content: center;
+    padding: 10px;
+  }
+
+  .time-display {
+    margin-bottom: 1vh;
+  }
+}
+
+/* 深色模式下的微调（虽然默认就是深色） */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --shadow-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .time-display {
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+  }
+}
+
+/* 减少动画的用户偏好 */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 高对比度模式支持 */
+@media (prefers-contrast: high) {
+  :root {
+    --text-color: #ffffff;
+    --primary-bg: #000000;
+  }
+
+  .settings-btn,
+  .setting-item label {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+}

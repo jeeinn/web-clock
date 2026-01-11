@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="网络时钟">
+  <meta name="theme-color" content="#000000">
+  <title>网络时钟 - iPhone SE 专用</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAyNCIgaGVpZ2h0PSIxMDI0IiB2aWV3Qm94PSIwIDAgMTAyNCAxMDI0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTAyNCIgaGVpZ2h0PSIxMDI0IiBmaWxsPSIjMDAwMDAwIi8+Cjx0ZXh0IHg9IjUxMiIgeT0iNTYwIiBmb250LWZhbWlseT0iLWFwcGxlLXN5c3RlbSwgQmxpbmtNYWNTeXN0ZW1Gb250IiBmb250LXNpemU9IjE4MCIgZm9udC13ZWlnaHQ9IjIwMCIgZmlsbD0iI0ZGRkZGRiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+MjI6MTA8L3RleHQ+Cjwvc3ZnPgo=" />
+</head>
+<body>
+  <div class="clock-container">
+    <div class="time-display" id="timeDisplay">22:10</div>
+    <div class="date-display" id="dateDisplay">2026-01-11</div>
+  </div>
+
+  <button class="settings-btn" id="settingsBtn" aria-label="设置">
+    ⚙️
+  </button>
+
+  <div class="settings-panel" id="settingsPanel" aria-hidden="true">
+    <div class="settings-content">
+      <h3>设置</h3>
+      <div class="setting-item">
+        <label for="showDate">
+          <input type="checkbox" id="showDate" checked>
+          <span class="checkbox-custom"></span>
+          显示日期
+        </label>
+      </div>
+      <button class="close-btn" id="closeSettings">关闭</button>
+    </div>
+  </div>
+
+  <div class="settings-backdrop" id="settingsBackdrop"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
