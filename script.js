@@ -39,6 +39,7 @@ class WebClock {
     this.cacheElements();
     this.setupEventListeners();
     this.applySettings();
+    this.setupThemeListener();
     this.startClock();
     this.setupWakeLock();
 
@@ -56,6 +57,8 @@ class WebClock {
       settingsPanel: document.getElementById('settingsPanel'),
       settingsBackdrop: document.getElementById('settingsBackdrop'),
       showDateCheckbox: document.getElementById('showDate'),
+      showSecondsCheckbox: document.getElementById('showSeconds'),
+      themeSelector: document.getElementById('themeMode'),
       closeSettingsBtn: document.getElementById('closeSettings'),
     };
 
@@ -86,6 +89,22 @@ class WebClock {
       this.saveSettings();
       this.updateDateDisplay();
       console.log(`📅 日期显示: ${this.settings.showDate ? '开启' : '关闭'}`);
+    });
+
+    // 秒钟显示切换
+    this.elements.showSecondsCheckbox?.addEventListener('change', (e) => {
+      this.settings.showSeconds = e.target.checked;
+      this.saveSettings();
+      this.updateTime(); // 立即更新时间显示
+      console.log(`⏰ 秒钟显示: ${this.settings.showSeconds ? '开启' : '关闭'}`);
+    });
+
+    // 主题模式切换
+    this.elements.themeSelector?.addEventListener('change', (e) => {
+      this.settings.themeMode = e.target.value;
+      this.saveSettings();
+      this.applyTheme();
+      console.log(`🎨 主题切换为: ${e.target.value}`);
     });
 
     // 页面可见性变化处理
@@ -126,7 +145,17 @@ class WebClock {
     if (this.elements.showDateCheckbox) {
       this.elements.showDateCheckbox.checked = this.settings.showDate;
     }
+
+    if (this.elements.showSecondsCheckbox) {
+      this.elements.showSecondsCheckbox.checked = this.settings.showSeconds;
+    }
+
+    if (this.elements.themeSelector) {
+      this.elements.themeSelector.value = this.settings.themeMode;
+    }
+
     this.updateDateDisplay();
+    this.applyTheme();
 
     console.log('⚙️ 设置已应用:', this.settings);
   }
@@ -163,12 +192,18 @@ class WebClock {
   updateTime() {
     const now = new Date();
 
-    // 24小时制时间格式
-    const timeString = now.toLocaleTimeString('zh-CN', {
+    // 24小时制时间格式，根据设置决定是否显示秒钟
+    const timeOptions = {
       hour12: false,
       hour: '2-digit',
       minute: '2-digit'
-    });
+    };
+
+    if (this.settings.showSeconds) {
+      timeOptions.second = '2-digit';
+    }
+
+    const timeString = now.toLocaleTimeString('zh-CN', timeOptions);
 
     // 日期格式
     const dateString = now.toLocaleDateString('zh-CN', {
@@ -204,6 +239,81 @@ class WebClock {
           this.elements.dateDisplay.style.display = 'none';
         }
       }, 300);
+    }
+  }
+
+  /**
+   * 应用主题
+   */
+  applyTheme() {
+    const body = document.body;
+    let themeToApply = this.settings.themeMode;
+
+    // 自动主题检测
+    if (themeToApply === 'auto') {
+      themeToApply = this.getAutoTheme();
+    }
+
+    // 应用主题
+    body.setAttribute('data-theme', themeToApply);
+
+    // 更新meta主题颜色
+    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeColorMeta) {
+      themeColorMeta.content = themeToApply === 'light' ? '#ffffff' : '#000000';
+    }
+
+    console.log(`🎨 主题已应用: ${themeToApply}`);
+  }
+
+  /**
+   * 获取自动主题（基于系统设置和时间）
+   */
+  getAutoTheme() {
+    // 首先检查系统偏好
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+      return 'light';
+    }
+
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark';
+    }
+
+    // 如果系统没有偏好设置，根据时间自动切换
+    const now = new Date();
+    const hour = now.getHours();
+
+    // 白天时间：6:00 - 18:00 使用浅色主题
+    // 夜晚时间：18:00 - 6:00 使用深色主题
+    return (hour >= 6 && hour < 18) ? 'light' : 'dark';
+  }
+
+  /**
+   * 设置系统主题变化监听器
+   */
+  setupThemeListener() {
+    // 监听系统主题变化
+    if (window.matchMedia) {
+      const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const lightModeQuery = window.matchMedia('(prefers-color-scheme: light)');
+
+      const handleThemeChange = () => {
+        if (this.settings.themeMode === 'auto') {
+          this.applyTheme();
+          console.log('🔄 系统主题变化，重新应用自动主题');
+        }
+      };
+
+      darkModeQuery.addEventListener('change', handleThemeChange);
+      lightModeQuery.addEventListener('change', handleThemeChange);
+    }
+
+    // 监听时间变化，用于基于时间的主题切换
+    // 每小时检查一次是否需要切换主题
+    if (this.settings.themeMode === 'auto') {
+      setInterval(() => {
+        this.applyTheme();
+      }, 60 * 60 * 1000); // 每小时检查一次
     }
   }
 
@@ -372,7 +482,9 @@ class WebClock {
   loadSettings() {
     const defaultSettings = {
       showDate: true,
-      version: '1.0.0'
+      showSeconds: true,        // 默认显示秒钟
+      themeMode: 'auto',        // 自动主题模式
+      version: '1.1.0'
     };
 
     try {

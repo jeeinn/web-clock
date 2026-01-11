@@ -24,13 +24,41 @@
   <div class="settings-panel" id="settingsPanel" aria-hidden="true">
     <div class="settings-content">
       <h3>设置</h3>
-      <div class="setting-item">
-        <label for="showDate">
-          <input type="checkbox" id="showDate" checked>
-          <span class="checkbox-custom"></span>
-          显示日期
-        </label>
+
+      <!-- 显示选项 -->
+      <div class="setting-group">
+        <h4>显示选项</h4>
+
+        <div class="setting-item">
+          <label for="showSeconds">
+            <input type="checkbox" id="showSeconds" checked>
+            <span class="checkbox-custom"></span>
+            显示秒钟
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <label for="showDate">
+            <input type="checkbox" id="showDate" checked>
+            <span class="checkbox-custom"></span>
+            显示日期
+          </label>
+        </div>
       </div>
+
+      <!-- 主题设置 -->
+      <div class="setting-group">
+        <h4>主题模式</h4>
+        <div class="setting-item">
+          <label for="themeMode">主题</label>
+          <select id="themeMode" class="theme-selector">
+            <option value="auto">自动 🌓</option>
+            <option value="light">白天 ☀️</option>
+            <option value="dark">夜间 🌙</option>
+          </select>
+        </div>
+      </div>
+
       <button class="close-btn" id="closeSettings">关闭</button>
     </div>
   </div>
