@@ -535,7 +535,7 @@ class WebClock {
       showDate: true,
       showSeconds: true,        // 默认显示秒钟
       themeMode: 'auto',        // 自动主题模式
-      version: '1.1.0'
+      version: '1.2.0'
     };
 
     try {
