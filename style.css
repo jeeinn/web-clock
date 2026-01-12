@@ -89,9 +89,10 @@ body {
   font-size: var(--time-size);
   font-weight: 200;
   font-variant-numeric: tabular-nums; /* 数字等宽 */
+  font-feature-settings: "tnum" 1;    /* 强制启用表格数字 */
+  letter-spacing: 0.05em;             /* 微调间距确保稳定 */
   line-height: 0.8;
   margin-bottom: 2vh;
-  letter-spacing: -0.02em; /* 紧密间距 */
 
   /* 硬件加速和性能优化 */
   transform: translateZ(0);
