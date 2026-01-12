@@ -118,12 +118,20 @@ body {
   transform: translateY(-10px);
 }
 
-/* 设置按钮 */
-.settings-btn {
+/* 操作按钮容器 */
+.action-buttons {
   position: fixed;
   top: calc(var(--safe-padding) + env(safe-area-inset-top));
   right: calc(var(--safe-padding) + env(safe-area-inset-right));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 100;
+}
 
+/* 设置按钮和全屏按钮共用样式 */
+.settings-btn,
+.fullscreen-btn {
   width: var(--setting-btn-size);
   height: var(--setting-btn-size);
 
@@ -148,12 +156,14 @@ body {
   -webkit-backdrop-filter: blur(10px);
 }
 
-.settings-btn:hover {
+.settings-btn:hover,
+.fullscreen-btn:hover {
   background: rgba(255, 255, 255, 0.2);
   transform: scale(1.05);
 }
 
-.settings-btn:active {
+.settings-btn:active,
+.fullscreen-btn:active {
   transform: scale(0.95);
   opacity: 0.7;
   background: rgba(255, 255, 255, 0.3);

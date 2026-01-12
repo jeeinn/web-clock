@@ -53,6 +53,7 @@ class WebClock {
     this.elements = {
       timeDisplay: document.getElementById('timeDisplay'),
       dateDisplay: document.getElementById('dateDisplay'),
+      fullscreenBtn: document.getElementById('fullscreenBtn'),
       settingsBtn: document.getElementById('settingsBtn'),
       settingsPanel: document.getElementById('settingsPanel'),
       settingsBackdrop: document.getElementById('settingsBackdrop'),
@@ -74,6 +75,9 @@ class WebClock {
    * 设置事件监听器
    */
   setupEventListeners() {
+    // 全屏按钮点击
+    this.elements.fullscreenBtn?.addEventListener('click', () => this.toggleFullscreen());
+
     // 设置按钮点击
     this.elements.settingsBtn?.addEventListener('click', () => this.toggleSettings(true));
 
@@ -134,6 +138,10 @@ class WebClock {
     document.addEventListener('contextmenu', (e) => {
       e.preventDefault();
     });
+
+    // 监听全屏状态变化
+    document.addEventListener('fullscreenchange', () => this.handleFullscreenChange());
+    document.addEventListener('webkitfullscreenchange', () => this.handleFullscreenChange());
 
     console.log('🎯 事件监听器设置完成');
   }
@@ -347,6 +355,49 @@ class WebClock {
 
       console.log('📱 设置面板已关闭');
     }
+  }
+
+  /**
+   * 切换全屏模式
+   */
+  async toggleFullscreen() {
+    try {
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        // 进入全屏
+        if (document.documentElement.requestFullscreen) {
+          await document.documentElement.requestFullscreen();
+        } else if (document.documentElement.webkitRequestFullscreen) {
+          await document.documentElement.webkitRequestFullscreen();
+        }
+        console.log('✨ 进入全屏模式');
+      } else {
+        // 退出全屏
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          await document.webkitExitFullscreen();
+        }
+        console.log('🚪 退出全屏模式');
+      }
+    } catch (error) {
+      console.error('❌ 全屏切换失败:', error);
+    }
+  }
+
+  /**
+   * 处理全屏状态变化
+   */
+  handleFullscreenChange() {
+    const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement);
+    const btn = this.elements.fullscreenBtn;
+
+    if (btn) {
+      // 根据全屏状态更新按钮图标
+      btn.textContent = isFullscreen ? '⛶' : '⛶';
+      btn.setAttribute('aria-label', isFullscreen ? '退出全屏' : '全屏');
+    }
+
+    console.log(`🖥️ 全屏状态: ${isFullscreen ? '已开启' : '已关闭'}`);
   }
 
   /**
